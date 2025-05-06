@@ -21,7 +21,7 @@ const ReminderWindow = () => {
   const [background, setBackground] = useState('');
 
   useEffect(() => {
-    const images = window.require('fs').readdirSync('/Users/cass/Desktop/practice/electron-app/src/assets/bg').filter(file => /.(jpg|jpeg|png)$/i.test(file));
+    const images = window.require('fs').readdirSync('/Users/cass/Desktop/practice/electron-app/src/assets/bg').filter((file:string) => /.(jpg|jpeg|png)$/i.test(file));
     const randomIndex = Math.floor(Math.random() * images.length);
     setBackground(`/src/assets/bg/${images[randomIndex]}`);
   }, []);

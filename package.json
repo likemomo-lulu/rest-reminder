@@ -29,5 +29,18 @@
     "sass": "^1.87.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
+  },
+  "build": {
+    "appId": "com.rest-reminder.app",
+    "productName": "Rest Reminder",
+    "mac": {
+      "icon": "build/icon.icns"
+    },
+    "win": {
+      "icon": "build/icon.ico"
+    },
+    "linux": {
+      "icon": "build/icon.png"
+    }
   }
 }

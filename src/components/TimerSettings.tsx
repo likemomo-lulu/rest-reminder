@@ -10,7 +10,7 @@ declare global {
 const { ipcRenderer } = window.require('electron');
 
 const TimerSettings = () => {
-  const [interval, setInterval] = useState(1); // 默认30分钟
+  const [interval, setInterval] = useState(45); // 默认45分钟
 
 
 
@@ -29,9 +29,20 @@ const TimerSettings = () => {
 
   return (
     <div className="timer-settings">
+      <div className="window-controls">
+        <button className="control-btn minimize" onClick={() => ipcRenderer.send('window-control', 'minimize')}>
+          <span>─</span>
+        </button>
+        <button className="control-btn maximize" onClick={() => ipcRenderer.send('window-control', 'maximize')}>
+          <span>□</span>
+        </button>
+        <button className="control-btn close" onClick={() => ipcRenderer.send('window-control', 'close')}>
+          <span>×</span>
+        </button>
+      </div>
       <h2>休息提醒设置</h2>
       <div className="setting-group">
-        <label>提醒间隔（分钟）：</label>
+        <span>提醒间隔（分钟）：</span>
         <input
           type="number"
           min="1"
@@ -39,7 +50,7 @@ const TimerSettings = () => {
           onChange={handleIntervalChange}
         />
       </div>
-      <button onClick={handleSetTimer}>开始提醒</button>
+      <button onClick={handleSetTimer}>重置提醒</button>
     </div>
   );
 };

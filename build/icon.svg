@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- 闹钟主体 -->
+  <circle cx="256" cy="256" r="200" fill="#FFE4E1" stroke="#FF69B4" stroke-width="20"/>
+  
+  <!-- 闹钟顶部装饰 -->
+  <path d="M200 80 L256 56 L312 80" stroke="#FF69B4" stroke-width="16" fill="none" stroke-linecap="round"/>
+  
+  <!-- 闹钟耳朵 -->
+  <circle cx="150" cy="100" r="20" fill="#FF69B4"/>
+  <circle cx="362" cy="100" r="20" fill="#FF69B4"/>
+  
+  <!-- 闹钟眼睛（闭着的） -->
+  <path d="M180 220 Q220 240 260 220" stroke="#FF69B4" stroke-width="8" fill="none"/>
+  <path d="M260 220 Q300 240 340 220" stroke="#FF69B4" stroke-width="8" fill="none"/>
+  
+  <!-- 闹钟嘴巴（微笑） -->
+  <path d="M200 300 Q256 360 312 300" stroke="#FF69B4" stroke-width="8" fill="none"/>
+  
+  <!-- 休息标志 -->
+  <text x="256" y="400" font-family="Arial" font-size="40" fill="#FF69B4" text-anchor="middle">Rest</text>
+  
+  <!-- 装饰星星 -->
+  <path d="M400 120 L410 130 L420 120 L410 110 Z" fill="#FFB6C1"/>
+  <path d="M100 350 L110 360 L120 350 L110 340 Z" fill="#FFB6C1"/>
+  <path d="M420 300 L430 310 L440 300 L430 290 Z" fill="#FFB6C1"/>
+</svg>

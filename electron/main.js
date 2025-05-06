@@ -10,9 +10,7 @@ function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    resizable: false,
-    frame: false,
-    transparent: true,
+    resizable: true,
     alwaysOnTop: true,
     webPreferences: {
       nodeIntegration: true,
@@ -29,6 +27,25 @@ function createMainWindow() {
   if (isDev) {
     mainWindow.webContents.openDevTools();
   }
+
+  // 窗口控制事件处理
+  ipcMain.on('window-control', (event, command) => {
+    switch (command) {
+      case 'minimize':
+        mainWindow.minimize();
+        break;
+      case 'maximize':
+        if (mainWindow.isMaximized()) {
+          mainWindow.unmaximize();
+        } else {
+          mainWindow.maximize();
+        }
+        break;
+      case 'close':
+        mainWindow.close();
+        break;
+    }
+  });
 
   mainWindow.on('closed', () => {
     mainWindow = null;

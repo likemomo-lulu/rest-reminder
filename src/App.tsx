@@ -7,9 +7,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* <Route path="/" element={<TimerSettings />} /> */}
-        <Route path="/" element={<ReminderWindow />} />
-        {/* <Route path="/reminder" element={<ReminderWindow />} /> */}
+        <Route path="/" element={<TimerSettings />} />
+        <Route path="/reminder" element={<ReminderWindow />} />
       </Routes>
     </Router>
   )
