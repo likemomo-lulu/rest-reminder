@@ -9,7 +9,10 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "electron:dev": "electron .",
-    "electron:build": "electron-builder"
+    "electron:build": "npm run build && electron-builder",
+    "pack:mac": "npm run build && electron-builder --mac",
+    "pack:win": "npm run build && electron-builder --win",
+    "pack:linux": "npm run build && electron-builder --linux"
   },
   "dependencies": {
     "electron-is-dev": "^2.0.0",
@@ -31,16 +34,15 @@
     "vite": "^4.4.5"
   },
   "build": {
-    "appId": "com.rest-reminder.app",
-    "productName": "Rest Reminder",
-    "mac": {
-      "icon": "build/icon.icns"
-    },
-    "win": {
-      "icon": "build/icon.ico"
-    },
-    "linux": {
-      "icon": "build/icon.png"
-    }
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "src/assets",
+        "to": "assets"
+      }
+    ]
   }
 }

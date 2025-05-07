@@ -2,7 +2,6 @@
   width: 800px;
   height: 600px;
   background-color: white;
-  padding: 1rem 4rem 4rem;
   position: relative;
 
   .window-controls {
@@ -14,7 +13,7 @@
     padding: 8px;
 
     .control-btn {
-      width: 24px;
+      width: 18px;
       height: 24px;
       border: none;
       border-radius: 4px;
@@ -45,7 +44,6 @@
 
       span {
         font-size: 16px;
-        line-height: 1;
       }
     }
   }
@@ -87,7 +85,7 @@
   }
 
   button {
-    background-color: rgb(208, 113, 208);
+    background-color: rgb(41, 149, 226);
     color: white;
     border: none;
     padding: 0.8rem 2rem;
@@ -97,8 +95,9 @@
     transition: background-color 0.2s;
 
     &:hover {
-      background-color: rgb(208, 113, 208);
-      outline:none;
+      background-color: rgb(41, 149, 226);
+      transform: translateY(-1px);
+      transition: all 0.3s ease;
     }
     &:focus {
       outline: none;

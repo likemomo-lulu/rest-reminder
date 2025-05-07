@@ -1,13 +1,6 @@
 import { useEffect, useState } from 'react';
 import './ReminderWindow.scss';
 
-declare global {
-  interface Window {
-    require: any;
-  }
-}
-
-const { ipcRenderer } = window.require('electron');
 
 const reminderTexts = [
   '该休息一下啦！起来活动活动~',
@@ -21,9 +14,22 @@ const ReminderWindow = () => {
   const [background, setBackground] = useState('');
 
   useEffect(() => {
-    const images = window.require('fs').readdirSync('/Users/cass/Desktop/practice/electron-app/src/assets/bg').filter((file:string) => /.(jpg|jpeg|png)$/i.test(file));
-    const randomIndex = Math.floor(Math.random() * images.length);
-    setBackground(`/src/assets/bg/${images[randomIndex]}`);
+    async function loadBackgroundImage() {
+      try {
+        const bgImages = await window.electronAPI.getBackgroundImages();
+        if (bgImages.length > 0) {
+          const randomIndex = Math.floor(Math.random() * bgImages.length);
+          setBackground(`file://${bgImages[randomIndex]}`);
+        } else {
+          console.warn('No background images found');
+          setBackground('file:///src/assets/bg/default.jpg');
+        }
+      } catch (error) {
+        console.error('Error loading background images:', error);
+        setBackground('/src/assets/bg/default.jpg');
+      }
+    }
+    loadBackgroundImage();
   }, []);
   const [text, setText] = useState('');
 
@@ -34,7 +40,7 @@ const ReminderWindow = () => {
   }, []);
 
   const handleClose = () => {
-    ipcRenderer.send('close-reminder');
+    window.electronAPI.closeReminder();
   };
 
   useEffect(() => {

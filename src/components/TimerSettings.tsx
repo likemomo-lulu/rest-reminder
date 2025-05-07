@@ -3,24 +3,28 @@ import './TimerSettings.scss';
 
 declare global {
   interface Window {
-    require: any;
+    electronAPI: {
+      setReminderInterval: (minutes: number) => void;
+      getBackgroundImages: () => Promise<string[]>;
+      closeReminder: () => void;
+      windowControl: (action: string) => void;
+    };
   }
 }
-
-const { ipcRenderer } = window.require('electron');
 
 const TimerSettings = () => {
   const [interval, setInterval] = useState(45); // 默认45分钟
 
 
-
   const handleIntervalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
-    setInterval(value);
+    if (!isNaN(value)) {
+      setInterval(value);
+    }
   };
 
   const handleSetTimer = () => {
-    ipcRenderer.send('set-reminder-interval', interval);
+    window.electronAPI.setReminderInterval(interval);
   };
 
   useEffect(() => {
@@ -30,17 +34,17 @@ const TimerSettings = () => {
   return (
     <div className="timer-settings">
       <div className="window-controls">
-        <button className="control-btn minimize" onClick={() => ipcRenderer.send('window-control', 'minimize')}>
+        <button className="control-btn minimize" onClick={() => window.electronAPI.windowControl('minimize')}>
           <span>─</span>
         </button>
-        <button className="control-btn maximize" onClick={() => ipcRenderer.send('window-control', 'maximize')}>
+        <button className="control-btn maximize" onClick={() => window.electronAPI.windowControl('maximize')}>
           <span>□</span>
         </button>
-        <button className="control-btn close" onClick={() => ipcRenderer.send('window-control', 'close')}>
+        <button className="control-btn close" onClick={() => window.electronAPI.windowControl('close')}>
           <span>×</span>
         </button>
       </div>
-      <h2>休息提醒设置</h2>
+      <h2>提醒设置</h2>
       <div className="setting-group">
         <span>提醒间隔（分钟）：</span>
         <input
@@ -50,7 +54,7 @@ const TimerSettings = () => {
           onChange={handleIntervalChange}
         />
       </div>
-      <button onClick={handleSetTimer}>重置提醒</button>
+      <button onClick={handleSetTimer}>开始提醒</button>
     </div>
   );
 };
