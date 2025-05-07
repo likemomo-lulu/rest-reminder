@@ -43,6 +43,12 @@
         "from": "src/assets",
         "to": "assets"
       }
-    ]
+    ],
+    "mac": {
+      "icon": "build/icons/icon.icns"
+    },
+    "windows": {
+      "icon": "build/icons/icon.ico"
+    }
   }
 }

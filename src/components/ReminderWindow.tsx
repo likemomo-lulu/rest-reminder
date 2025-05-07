@@ -32,6 +32,7 @@ const ReminderWindow = () => {
     loadBackgroundImage();
   }, []);
   const [text, setText] = useState('');
+  const [countdown, setCountdown] = useState(180); // 3分钟倒计时（180秒）
 
   useEffect(() => {
     // 随机选择提示文案
@@ -56,15 +57,32 @@ const ReminderWindow = () => {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const countdownInterval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(countdownInterval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    const closeTimer = setTimeout(() => {
       handleClose();
     }, 180000);
-    return () => clearTimeout(timer);
+    
+    return () => {
+      clearInterval(countdownInterval);
+      clearTimeout(closeTimer);
+    };
   }, []);
 
   return (
     <div className="reminder-window" style={{ backgroundImage: `url(${background})`, backgroundSize: 'cover' }}>
       <div className='reminder-content'>
+         <div className='countdown'>
+            {Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, '0')}
+         </div>
          <span className='reminder-text' onClick={handleClose}>{text}</span>
       </div> 
     </div>

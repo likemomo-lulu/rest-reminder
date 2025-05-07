@@ -14,6 +14,14 @@
     position: absolute;
     bottom: 100px;
 
+    .countdown {
+      margin-bottom: 1rem;
+      color: #FFF;
+      font-size: 3rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    
     .reminder-text {
       margin-bottom: 2rem;
       color: #FFF;
