@@ -26,6 +26,15 @@ let reminderWindow = null;
 let reminderTimer = null;
 
 function createMainWindow() {
+  // 如果主窗口已存在，则激活它而不是创建新窗口
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    }
+    mainWindow.focus();
+    return;
+  }
+
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -50,20 +59,6 @@ function createMainWindow() {
   }
 
   // 窗口控制事件处理
-  // 获取背景图片列表
-  ipcMain.handle('get-background-images', async () => {
-    const bgDir = path.join(getAssetPath('assets', 'bg'));
-    console.log('bgDir---',bgDir);
-    try {
-      const files = await fs.promises.readdir(bgDir);
-      console.log('files---',files);
-      const images = files.filter(file => /\.(jpg|jpeg|png)$/i.test(file));
-      return images.map(file => path.join(bgDir, file));
-    } catch (error) {
-      console.error('Error reading background images:', error);
-      return [];
-    }
-  });
 
   ipcMain.on('window-control', (event, command) => {
     switch (command) {
@@ -89,6 +84,15 @@ function createMainWindow() {
 }
 
 function createReminderWindow() {
+  // 如果提醒窗口已存在，则激活它而不是创建新窗口
+  if (reminderWindow) {
+    if (reminderWindow.isMinimized()) {
+      reminderWindow.restore();
+    }
+    reminderWindow.focus();
+    return;
+  }
+
   reminderWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -105,16 +109,54 @@ function createReminderWindow() {
 
   reminderWindow.loadURL(`${getHtmlPath()}#reminder`);
 
+  // 监听窗口关闭事件
+  reminderWindow.on('closed', () => {
+    reminderWindow = null;
+  });
 
   setTimeout(() => {
     if (reminderWindow) {
       reminderWindow.close();
-      reminderWindow = null;
     }
   }, 180000); // 3分钟后自动关闭
 }
 
-app.whenReady().then(createMainWindow);
+// 初始化IPC事件处理程序
+function setupIpcHandlers() {
+  ipcMain.handle('get-background-images', async () => {
+    const bgDir = path.join(getAssetPath('assets', 'bg'));
+    try {
+      const files = await fs.promises.readdir(bgDir);
+      const images = files.filter(file => /\.(jpg|jpeg|png)$/i.test(file));
+      return images.map(file => path.join(bgDir, file));
+    } catch (error) {
+      console.error('Error reading background images:', error);
+      return [];
+    }
+  });
+
+  ipcMain.on('set-reminder-interval', (event, minutes) => {
+    if (reminderTimer) {
+      clearInterval(reminderTimer);
+    }
+
+    reminderTimer = setInterval(() => {
+      createReminderWindow();
+    }, minutes * 60 * 1000);
+  });
+
+  ipcMain.on('close-reminder', () => {
+    if (reminderWindow) {
+      reminderWindow.close();
+      reminderWindow = null;
+    }
+  });
+}
+
+app.whenReady().then(() => {
+  setupIpcHandlers();
+  createMainWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -123,24 +165,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  if (mainWindow === null) {
+  if (app.isReady()) {
     createMainWindow();
-  }
-});
-
-ipcMain.on('set-reminder-interval', (event, minutes) => {
-  if (reminderTimer) {
-    clearInterval(reminderTimer);
-  }
-
-  reminderTimer = setInterval(() => {
-    createReminderWindow();
-  }, minutes * 60 * 1000);
-});
-
-ipcMain.on('close-reminder', () => {
-  if (reminderWindow) {
-    reminderWindow.close();
-    reminderWindow = null;
   }
 });
