@@ -1,13 +1,12 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('path');
-const isDev = require('electron-is-dev');
-const fs = require('fs');
-
+const { app, BrowserWindow, ipcMain } = require("electron");
+const path = require("path");
+const isDev = require("electron-is-dev");
+const fs = require("fs");
 
 // 获取资源文件路径
 const getAssetPath = (...paths) => {
   if (isDev) {
-    return path.join(__dirname, '..', ...paths);
+    return path.join(__dirname, "..", ...paths);
   }
   return path.join(process.resourcesPath, ...paths);
 };
@@ -15,11 +14,13 @@ const getAssetPath = (...paths) => {
 // 获取HTML文件路径
 const getHtmlPath = () => {
   if (isDev) {
-    return 'http://localhost:5173';
+    return "http://localhost:5173";
   }
-  return `file://${path.join(__dirname, '../dist/index.html')}`.replace(/\\/g, '/');
+  return `file://${path.join(app.getAppPath(), "dist/index.html")}`.replace(
+    /\\/g,
+    "/"
+  );
 };
-
 
 let mainWindow = null;
 let reminderWindow = null;
@@ -41,18 +42,17 @@ function createMainWindow() {
     x: 100,
     y: 100,
     frame: false,
-    transparent:false,
+    transparent: false,
     resizable: true,
     alwaysOnTop: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
-    }
+      preload: path.join(__dirname, "preload.js"),
+    },
   });
 
   mainWindow.loadURL(getHtmlPath());
-
 
   if (isDev) {
     mainWindow.webContents.openDevTools();
@@ -60,25 +60,25 @@ function createMainWindow() {
 
   // 窗口控制事件处理
 
-  ipcMain.on('window-control', (event, command) => {
+  ipcMain.on("window-control", (event, command) => {
     switch (command) {
-      case 'minimize':
+      case "minimize":
         mainWindow.minimize();
         break;
-      case 'maximize':
+      case "maximize":
         if (mainWindow.isMaximized()) {
           mainWindow.unmaximize();
         } else {
           mainWindow.maximize();
         }
         break;
-      case 'close':
+      case "close":
         mainWindow.close();
         break;
     }
   });
 
-  mainWindow.on('closed', () => {
+  mainWindow.on("closed", () => {
     mainWindow = null;
   });
 }
@@ -103,14 +103,20 @@ function createReminderWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
-    }
+      preload: path.join(__dirname, "preload.js"),
+    },
   });
 
-  reminderWindow.loadURL(`${getHtmlPath()}#reminder`);
+  const reminderHtmlPath = isDev
+    ? "http://localhost:5173/reminder.html"
+    : `file://${path.join(app.getAppPath(), "dist/reminder.html")}`.replace(
+        /\\/g,
+        "/"
+      );
+  reminderWindow.loadURL(reminderHtmlPath);
 
   // 监听窗口关闭事件
-  reminderWindow.on('closed', () => {
+  reminderWindow.on("closed", () => {
     reminderWindow = null;
   });
 
@@ -123,19 +129,19 @@ function createReminderWindow() {
 
 // 初始化IPC事件处理程序
 function setupIpcHandlers() {
-  ipcMain.handle('get-background-images', async () => {
-    const bgDir = path.join(getAssetPath('assets', 'bg'));
+  ipcMain.handle("get-background-images", async () => {
+    const bgDir = path.join(getAssetPath("assets", "bg"));
     try {
       const files = await fs.promises.readdir(bgDir);
-      const images = files.filter(file => /\.(jpg|jpeg|png)$/i.test(file));
-      return images.map(file => path.join(bgDir, file));
+      const images = files.filter((file) => /\.(jpg|jpeg|png)$/i.test(file));
+      return images.map((file) => path.join(bgDir, file));
     } catch (error) {
-      console.error('Error reading background images:', error);
+      console.error("Error reading background images:", error);
       return [];
     }
   });
 
-  ipcMain.on('set-reminder-interval', (event, minutes) => {
+  ipcMain.on("set-reminder-interval", (event, minutes) => {
     if (reminderTimer) {
       clearInterval(reminderTimer);
     }
@@ -145,7 +151,7 @@ function setupIpcHandlers() {
     }, minutes * 60 * 1000);
   });
 
-  ipcMain.on('close-reminder', () => {
+  ipcMain.on("close-reminder", () => {
     if (reminderWindow) {
       reminderWindow.close();
       reminderWindow = null;
@@ -158,13 +164,13 @@ app.whenReady().then(() => {
   createMainWindow();
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });
 
-app.on('activate', () => {
+app.on("activate", () => {
   if (app.isReady()) {
     createMainWindow();
   }
