@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, powerMonitor } = require("electron");
 const path = require("path");
 const isDev = require("electron-is-dev");
 const fs = require("fs");
@@ -25,6 +25,7 @@ const getHtmlPath = () => {
 let mainWindow = null;
 let reminderWindow = null;
 let reminderTimer = null;
+let defaultReminderInterval = null; // 存储默认提醒间隔
 
 function createMainWindow() {
   // 如果主窗口已存在，则激活它而不是创建新窗口
@@ -146,6 +147,7 @@ function setupIpcHandlers() {
       clearInterval(reminderTimer);
     }
 
+    defaultReminderInterval = minutes; // 保存默认提醒间隔
     reminderTimer = setInterval(() => {
       createReminderWindow();
     }, minutes * 60 * 1000);
@@ -162,6 +164,28 @@ function setupIpcHandlers() {
 app.whenReady().then(() => {
   setupIpcHandlers();
   createMainWindow();
+
+  // 监听系统休眠事件
+  powerMonitor.on('suspend', () => {
+    if (reminderTimer) {
+      clearInterval(reminderTimer);
+      reminderTimer = null;
+    }
+    if(reminderWindow){
+      reminderWindow.close();
+      reminderWindow = null;
+    }
+  });
+
+  // 监听系统唤醒事件，不自动重启定时器
+  powerMonitor.on('resume', () => {
+    // 如果存在默认提醒间隔，则自动重启定时器
+    if (defaultReminderInterval) {
+      reminderTimer = setInterval(() => {
+        createReminderWindow();
+      }, defaultReminderInterval * 60 * 1000);
+    }
+  });
 });
 
 app.on("window-all-closed", () => {
