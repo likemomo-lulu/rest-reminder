@@ -25,7 +25,7 @@ const getHtmlPath = () => {
 let mainWindow = null;
 let reminderWindow = null;
 let reminderTimer = null;
-let defaultReminderInterval = null; // 存储默认提醒间隔
+let defaultReminderInterval = 45; // 存储默认提醒间隔
 
 function createMainWindow() {
   // 如果主窗口已存在，则激活它而不是创建新窗口
